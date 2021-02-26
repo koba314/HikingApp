@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">HikingApp</string>
+    <string name="map_button_string">Map</string>
+    <string name="plans_button_string">Hiking Plans</string>
+    <string name="settings_button_string">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_map">Map</string>
+    <string name="title_plans">Plans</string>
+    <string name="title_settings">Settings</string>
 </resources>
