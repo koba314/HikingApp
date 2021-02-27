@@ -1,6 +1,7 @@
 package com.example.hikingapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.hikingapp.ui.map.MapFragment;
@@ -18,6 +19,8 @@ import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String TAG = "MainActivity";
+
     private NavController navController;
     private BottomNavigationView navView;
     private MapFragment mapFragment;
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
         //Get desired fragment from intent
@@ -93,6 +97,42 @@ public class MainActivity extends AppCompatActivity {
                 frag = null;
         }
         return frag;
+    }
+
+    //
+    //
+    // METHOD OVERRIDES FOR LOGGING
+    //
+    //
+
+    @Override
+    public void onStart(){
+        Log.i(TAG, "onStart()");
+        super.onStart();
+    }
+
+    @Override
+    public void onPause(){
+        Log.i(TAG, "onPause()");
+        super.onPause();
+    }
+
+    @Override
+    public void onResume(){
+        Log.i(TAG, "onResume()");
+        super.onResume();
+    }
+
+    @Override
+    public void onStop(){
+        Log.i(TAG, "onStop()");
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy(){
+        Log.i(TAG, "onDestroy()");
+        super.onDestroy();
     }
 
 }
