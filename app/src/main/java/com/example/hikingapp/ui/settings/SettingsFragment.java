@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,11 +28,39 @@ public class SettingsFragment extends Fragment {
         settingsViewModel =
                 new ViewModelProvider(this).get(SettingsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        settingsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        final TextView emergencyContactTitle = root.findViewById(R.id.text_emergency_contact_title);
+        final TextView emergencyContactName = root.findViewById(R.id.text_emergency_contact_name);
+        final TextView emergencyContactPhoneNumber = root.findViewById(R.id.text_emergency_contact_phone_number);
+        final TextView emergencyContactMessage = root.findViewById(R.id.text_emergency_contact_message);
+        final Button emergencyContactButton = root.findViewById(R.id.button_emergency_contact_view);
+        settingsViewModel.getTitleText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-                textView.setText(s);
+                emergencyContactTitle.setText(s);
+            }
+        });
+        settingsViewModel.getNameText().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                emergencyContactName.setText(s);
+            }
+        });
+        settingsViewModel.getPhoneNumberText().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                emergencyContactPhoneNumber.setText(s);
+            }
+        });
+        settingsViewModel.getMessageText().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                emergencyContactMessage.setText(s);
+            }
+        });
+        settingsViewModel.getButtonText().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                emergencyContactButton.setText(s);
             }
         });
         return root;

@@ -40,9 +40,11 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0'
 
     implementation platform('com.google.firebase:firebase-bom:26.7.0')
+    implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.preference:preference:1.1.1'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
