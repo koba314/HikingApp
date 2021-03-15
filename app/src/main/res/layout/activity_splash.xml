@@ -73,6 +73,24 @@
                 android:layout_margin="5dp"
                 android:onClick="onSettingsButtonClick"/>
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/login_register_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_sign_in"
+                android:layout_margin="5dp"
+                android:onClick="onLoginButtonClick"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:visibility="gone"
+                android:id="@+id/logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_sign_out"
+                android:layout_margin="5dp"
+                android:onClick="onLogoutButtonClick" />
+
+
         </androidx.appcompat.widget.LinearLayoutCompat>
 
 

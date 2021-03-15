@@ -7,7 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.hikingapp.data.LoginDataSource;
+import com.example.hikingapp.data.LoginRepository;
+import com.example.hikingapp.ui.login.LoginActivity;
 import com.example.hikingapp.ui.map.MapFragment;
 import com.example.hikingapp.ui.plans.PlansFragment;
 import com.example.hikingapp.ui.settings.SettingsFragment;
@@ -17,11 +22,18 @@ public class SplashScreenActivity extends AppCompatActivity {
     public static final String TAG = "SplashScreenActivity";
     public static final String INTENDED_FRAGMENT = "com.hikingapp.INTENDED_FRAGMENT";
 
+    private Button loginRegisterButton;
+    private Button logoutButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        loginRegisterButton = findViewById(R.id.login_register_button);
+        logoutButton = findViewById(R.id.logout_button);
+
     }
 
     /*
@@ -51,6 +63,28 @@ public class SplashScreenActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    /*
+     * Login or Register Button Callback
+     */
+    public void onLoginButtonClick(View view){
+        Intent i = new Intent(this, LoginActivity.class);
+        i.putExtra(LoginActivity.NEXT, TAG);
+        startActivity(i);
+    }
+
+    /*
+     * Logout Button Click
+     */
+    public void onLogoutButtonClick(View view){
+        LoginRepository loginRepo = LoginRepository.getInstance(LoginDataSource.getInstance());
+        loginRepo.logout();
+        Toast.makeText(getApplicationContext(), "Logged out!", Toast.LENGTH_SHORT).show();
+        if(!LoginRepository.getInstance(LoginDataSource.getInstance()).isLoggedIn()){
+            loginRegisterButton.setVisibility(View.VISIBLE);
+            logoutButton.setVisibility(View.GONE);
+        }
+    }
+
     //
     //
     // METHOD OVERRIDES FOR LOGGING
@@ -73,6 +107,11 @@ public class SplashScreenActivity extends AppCompatActivity {
     public void onResume(){
         Log.i(TAG, "onResume()");
         super.onResume();
+        //could use a viewmodel to model the login status, but seems unnecessary
+        if(LoginRepository.getInstance(LoginDataSource.getInstance()).isLoggedIn()){
+            loginRegisterButton.setVisibility(View.GONE);
+            logoutButton.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
