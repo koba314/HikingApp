@@ -1,18 +1,28 @@
 package com.example.hikingapp.ui.plans;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.hikingapp.R;
+import com.example.hikingapp.model.HikingPlan;
+
+import java.util.List;
 
 public class PlansFragment extends Fragment {
 
@@ -20,6 +30,9 @@ public class PlansFragment extends Fragment {
     public static final String PLANS_FRAGMENT = "com.hikingapp.PLANS_FRAGMENT";
 
     private PlansViewModel plansViewModel;
+    private RecyclerView mPlansRecyclerView;
+    private PlanAdapter mPlanAdapter;
+    private List<HikingPlan> mPlanList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
@@ -27,14 +40,103 @@ public class PlansFragment extends Fragment {
         plansViewModel =
                 new ViewModelProvider(this).get(PlansViewModel.class);
         View root = inflater.inflate(R.layout.fragment_plans, container, false);
-        final TextView textView = root.findViewById(R.id.text_home);
-        plansViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+
+        Button create_plan_button = root.findViewById(R.id.create_plan_button);
+
+        Activity activity = getActivity();
+        mPlansRecyclerView = root.findViewById(R.id.plans_recycler_view);
+        if(activity != null){
+            mPlansRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
+            PlanAdapter adapter = new PlanAdapter(plansViewModel.getPlans().getValue());
+            mPlansRecyclerView.setAdapter(adapter);
+            mPlansRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        }
+
+        plansViewModel.getPlans().observe(getViewLifecycleOwner(), new Observer<List<HikingPlan>>() {
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onChanged(@Nullable List<HikingPlan> plans){
+                mPlansRecyclerView.setAdapter(new PlanAdapter(plansViewModel.getPlans().getValue()));
             }
         });
+
+        create_plan_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                CreatePlansBottomSheetDialogFragment dialog = new CreatePlansBottomSheetDialogFragment();
+                dialog.show(getParentFragmentManager(), CreatePlansBottomSheetDialogFragment.TAG);
+            }
+        });
+
         return root;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState){
+        Log.i(TAG, "onViewCreated()");
+    }
+
+    private class PlanHolder extends RecyclerView.ViewHolder {
+        private HikingPlan plan;
+        private Button editPlanButton;
+        private Button viewPlanButton;
+        private String title;
+        private TextView titleView;
+
+        public PlanHolder(LayoutInflater inflater, ViewGroup parent){
+            super(inflater.inflate(R.layout.list_item_plan, parent, false));
+            viewPlanButton = itemView.findViewById(R.id.view_plan_button);
+            editPlanButton = itemView.findViewById(R.id.edit_plan_button);
+            editPlanButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    Log.i(TAG, "clicked EDIT plan");
+                    mPlansRecyclerView.scrollToPosition(getAdapterPosition());
+                    EditPlansBottomSheetDialogFragment dialog = new EditPlansBottomSheetDialogFragment(plan);
+                    dialog.show(getParentFragmentManager(), EditPlansBottomSheetDialogFragment.TAG);
+                }
+            });
+            viewPlanButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    Log.i(TAG, "clicked VIEW plan");
+                    mPlansRecyclerView.scrollToPosition(getAdapterPosition());
+                    ViewPlansBottomSheetDialogFragment dialog = new ViewPlansBottomSheetDialogFragment(plan);
+                    dialog.show(getParentFragmentManager(), ViewPlansBottomSheetDialogFragment.TAG);
+                }
+            });
+            titleView = itemView.findViewById(R.id.title);
+        }
+
+        public void bind(HikingPlan plan){
+            this.plan = plan;
+            title = plan.getName();
+            titleView.setText(title);
+        }
+    }
+
+    private class PlanAdapter extends RecyclerView.Adapter<PlanHolder> {
+        private List<HikingPlan> planList;
+
+        public PlanAdapter(List<HikingPlan> planList){
+            this.planList = planList;
+        }
+
+        @Override
+        public PlanHolder onCreateViewHolder(ViewGroup parent, int viewType){
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            return new PlanHolder(inflater, parent);
+        }
+
+        @Override
+        public void onBindViewHolder(PlanHolder holder, int position){
+            HikingPlan plan = PlansFragment.this.plansViewModel.getPlans().getValue().get(position);
+            holder.bind(plan);
+        }
+
+        @Override
+        public int getItemCount(){
+            return planList.size();
+        }
     }
 
     //

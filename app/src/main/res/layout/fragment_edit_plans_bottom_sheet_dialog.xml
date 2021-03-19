@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.plans.EditPlansBottomSheetDialogFragment">
+
+    <LinearLayout
+        android:id="@+id/plan_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/plan_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/plan_name"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"></TextView>
+
+        <EditText
+            android:id="@+id/plan_name_et"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/plan_name"
+            android:layout_marginLeft="10dp"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            ></EditText>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:id="@+id/plan_startLatitude_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plan_startLatitude"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"></TextView>
+
+                <EditText
+                    android:id="@+id/plan_startLatitude_et"
+                    app:layout_constraintTop_toBottomOf="@id/plan_startLatitude_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/plan_startLatitude"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:imeOptions="actionDone"
+                    ></EditText>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:id="@+id/plan_startLongitude_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plan_startLongitude"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"></TextView>
+
+                <EditText
+                    android:id="@+id/plan_startLongitude_et"
+                    app:layout_constraintTop_toBottomOf="@id/plan_startLongitude_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/plan_startLongitude"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:imeOptions="actionDone"
+                    ></EditText>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:id="@+id/plan_endLatitude_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plan_endLatitude"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"></TextView>
+
+                <EditText
+                    android:id="@+id/plan_endLatitude_et"
+                    app:layout_constraintTop_toBottomOf="@id/plan_endLatitude_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/plan_endLatitude"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:imeOptions="actionDone"
+                    ></EditText>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:id="@+id/plan_endLongitude_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plan_endLongitude"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"></TextView>
+
+                <EditText
+                    android:id="@+id/plan_endLongitude_et"
+                    app:layout_constraintTop_toBottomOf="@id/plan_endLongitude_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/plan_endLongitude"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:imeOptions="actionDone"
+                    ></EditText>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/plan_startTime_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plan_startTime"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"></TextView>
+
+                <EditText
+                    android:id="@+id/plan_startTime_et"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/plan_startTime_tv"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/plan_startTime"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="time"
+                    android:imeOptions="actionDone"
+                    ></EditText>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/plan_endTime_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plan_endTime"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"></TextView>
+
+                <EditText
+                    android:id="@+id/plan_endTime_et"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/plan_endTime_tv"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/plan_endTime"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="time"
+                    android:imeOptions="actionDone"
+                    ></EditText>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintWidth_percent=".5">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/plan_save_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_save">
+
+                </androidx.appcompat.widget.AppCompatButton>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintWidth_percent=".5">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/plan_delete_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_delete">
+
+                </androidx.appcompat.widget.AppCompatButton>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

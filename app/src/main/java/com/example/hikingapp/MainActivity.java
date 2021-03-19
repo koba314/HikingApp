@@ -42,23 +42,23 @@ public class MainActivity extends AppCompatActivity {
         plansFragment = new PlansFragment();
         settingsFragment = new SettingsFragment();
 
-        //set desired fragment
-        setCurrentFragment(getDesiredFragment(fragName));
+
 
         // set up navbar functionality
         navView = findViewById(R.id.nav_view);
+        //set nav view listener
         navView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch(item.getItemId()){
                     case R.id.navigation_map:
-                        setCurrentFragment(mapFragment);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, mapFragment).commit();
                         break;
                     case R.id.navigation_plans:
-                        setCurrentFragment(plansFragment);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, plansFragment).commit();
                         break;
                     case R.id.navigation_settings:
-                        setCurrentFragment(settingsFragment);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, settingsFragment).commit();
                         break;
                     default:
                         return false;
@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        //set desired fragment
+        setCurrentFragment(fragName);
 
         //
 //        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -77,26 +79,28 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void setCurrentFragment(Fragment frag){
-        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, frag).commit();
-    }
-
-    private Fragment getDesiredFragment(String fragName){
+    private void setCurrentFragment(String fragName){
         Fragment frag;
         switch(fragName){
             case MapFragment.MAP_FRAGMENT:
                 frag = mapFragment;
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, frag).commit();
+                navView.setSelectedItemId(R.id.navigation_map);
                 break;
             case PlansFragment.PLANS_FRAGMENT:
                 frag = plansFragment;
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, frag).commit();
+                navView.setSelectedItemId(R.id.navigation_plans);
                 break;
             case SettingsFragment.SETTINGS_FRAGMENT:
                 frag = settingsFragment;
+                getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, frag).commit();
+                navView.setSelectedItemId(R.id.navigation_settings);
                 break;
             default:
                 frag = null;
         }
-        return frag;
+        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, frag).commit();
     }
 
     //
