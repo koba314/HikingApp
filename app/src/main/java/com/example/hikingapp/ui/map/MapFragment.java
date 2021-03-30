@@ -13,6 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.hikingapp.R;
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.maps.Style;
 
 public class MapFragment extends Fragment {
 
@@ -20,18 +25,28 @@ public class MapFragment extends Fragment {
     public static final String MAP_FRAGMENT = "com.hikingapp.MAP_FRAGMENT";
 
     private MapViewModel mapViewModel;
+    private MapView mapView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
+        Mapbox.getInstance(getContext(), getString(R.string.mapbox_access_token));
+
         mapViewModel =
                 new ViewModelProvider(this).get(MapViewModel.class);
         View root = inflater.inflate(R.layout.fragment_map, container, false);
-        final TextView textView = root.findViewById(R.id.text_dashboard);
-        mapViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+
+        mapView = root.findViewById(R.id.mapView);
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(new OnMapReadyCallback(){
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onMapReady(@NonNull MapboxMap mapboxMap){
+                mapboxMap.setStyle(Style.OUTDOORS, new Style.OnStyleLoaded(){
+                    @Override
+                    public void onStyleLoaded(@NonNull Style style){
+                        //do something
+                    }
+                });
             }
         });
         return root;
@@ -47,6 +62,7 @@ public class MapFragment extends Fragment {
     public void onDestroyView(){
         Log.i(TAG, "onDestroyView()");
         super.onDestroyView();
+        mapView.onDestroy();
     }
 
     @Override
@@ -65,29 +81,40 @@ public class MapFragment extends Fragment {
     public void onStart(){
         Log.i(TAG, "onStart()");
         super.onStart();
+        mapView.onStart();
     }
 
     @Override
     public void onPause(){
         Log.i(TAG, "onPause()");
         super.onPause();
+        mapView.onPause();
     }
 
     @Override
     public void onResume(){
         Log.i(TAG, "onResume()");
         super.onResume();
+        mapView.onResume();
     }
 
     @Override
     public void onStop(){
         Log.i(TAG, "onStop()");
         super.onStop();
+        mapView.onStop();
     }
 
     @Override
     public void onDestroy(){
         Log.i(TAG, "onDestroy()");
         super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        Log.i(TAG, "onSaveInstanceState()");
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
     }
 }
