@@ -38,7 +38,7 @@ public class PlansFragment extends Fragment {
             ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
         plansViewModel =
-                new ViewModelProvider(this).get(PlansViewModel.class);
+                new ViewModelProvider(requireActivity()).get(PlansViewModel.class);
         View root = inflater.inflate(R.layout.fragment_plans, container, false);
 
         Button create_plan_button = root.findViewById(R.id.create_plan_button);
@@ -62,6 +62,7 @@ public class PlansFragment extends Fragment {
         create_plan_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                plansViewModel.setPlanToEdit(new HikingPlan());
                 CreatePlansBottomSheetDialogFragment dialog = new CreatePlansBottomSheetDialogFragment();
                 dialog.show(getActivity().getSupportFragmentManager(), CreatePlansBottomSheetDialogFragment.TAG);
             }
@@ -91,7 +92,8 @@ public class PlansFragment extends Fragment {
                 public void onClick(View v){
                     Log.i(TAG, "clicked EDIT plan");
                     mPlansRecyclerView.scrollToPosition(getAdapterPosition());
-                    EditPlansBottomSheetDialogFragment dialog = new EditPlansBottomSheetDialogFragment(plan);
+                    plansViewModel.setPlanToEdit(plan);
+                    EditPlansBottomSheetDialogFragment dialog = new EditPlansBottomSheetDialogFragment();
                     dialog.show(getParentFragmentManager(), EditPlansBottomSheetDialogFragment.TAG);
                 }
             });
@@ -100,7 +102,8 @@ public class PlansFragment extends Fragment {
                 public void onClick(View v){
                     Log.i(TAG, "clicked VIEW plan");
                     mPlansRecyclerView.scrollToPosition(getAdapterPosition());
-                    ViewPlansBottomSheetDialogFragment dialog = new ViewPlansBottomSheetDialogFragment(plan);
+                    plansViewModel.setPlanToEdit(plan);
+                    ViewPlansBottomSheetDialogFragment dialog = new ViewPlansBottomSheetDialogFragment();
                     dialog.show(getParentFragmentManager(), ViewPlansBottomSheetDialogFragment.TAG);
                 }
             });

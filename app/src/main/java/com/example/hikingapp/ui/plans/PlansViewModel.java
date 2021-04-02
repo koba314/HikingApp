@@ -15,6 +15,7 @@ public class PlansViewModel extends ViewModel implements HikingPlanDataSource.Hi
     private HikingPlanDataSource hikingPlanDataSource;
     private MutableLiveData<String> mText;
     private MutableLiveData<List<HikingPlan>> mPlans;
+    private MutableLiveData<HikingPlan> planToEdit;
 
     public PlansViewModel() {
         hikingPlanDataSource = HikingPlanDataSource.getInstance();
@@ -24,6 +25,7 @@ public class PlansViewModel extends ViewModel implements HikingPlanDataSource.Hi
         mPlans = new MutableLiveData<List<HikingPlan>>();
         //ensure mPlans does not hold a null value while waiting for data
         mPlans.setValue(new ArrayList<HikingPlan>());
+        planToEdit = new MutableLiveData<>();
         hikingPlanDataSource.getHikingPlans(this);
     }
 
@@ -32,6 +34,9 @@ public class PlansViewModel extends ViewModel implements HikingPlanDataSource.Hi
     }
 
     public LiveData<List<HikingPlan>> getPlans(){ return mPlans; }
+
+    public LiveData<HikingPlan> getPlanToEdit(){ return planToEdit; }
+    public void setPlanToEdit(HikingPlan plan){ planToEdit.setValue(plan); }
 
     public void onGetHikingPlans(List<HikingPlan> plans){
         mPlans.setValue(plans);

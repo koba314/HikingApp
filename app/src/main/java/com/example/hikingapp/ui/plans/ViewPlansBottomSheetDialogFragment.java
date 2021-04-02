@@ -3,6 +3,7 @@ package com.example.hikingapp.ui.plans;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,16 +24,20 @@ import java.time.OffsetDateTime;
 public class ViewPlansBottomSheetDialogFragment extends BottomSheetDialogFragment {
     public static final String TAG = "ViewPlansBSDFrag";
 
+    private PlansViewModel plansViewModel;
+
     private HikingPlan plan;
 
-    public ViewPlansBottomSheetDialogFragment(HikingPlan plan) {
-        this.plan = plan;
+    public ViewPlansBottomSheetDialogFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
+        plansViewModel =
+                new ViewModelProvider(requireActivity()).get(PlansViewModel.class);
+        plan = plansViewModel.getPlanToEdit().getValue();
     }
 
     @Override

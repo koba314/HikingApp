@@ -1,8 +1,10 @@
 package com.example.hikingapp.ui.plans;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,15 +25,18 @@ public class CreatePlansBottomSheetDialogFragment extends BottomSheetDialogFragm
 
     public static final String TAG = "CreatePlansBSDFrag";
 
+    private PlansViewModel plansViewModel;
+
     private HikingPlan plan;
 
-    public CreatePlansBottomSheetDialogFragment() {
-        plan = new HikingPlan();
-    }
+    public CreatePlansBottomSheetDialogFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        plansViewModel = new ViewModelProvider(requireActivity()).get(PlansViewModel.class);
+        // BEWARE: this is a reference to the same plan in the list of plans used by PlansFragment
+        plan = plansViewModel.getPlanToEdit().getValue();
     }
 
     @Override
@@ -76,5 +81,48 @@ public class CreatePlansBottomSheetDialogFragment extends BottomSheetDialogFragm
         });
 
         return root;
+    }
+
+    @Override
+    public void onAttach(Context context){
+        Log.i(TAG, "onAttach()");
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onDetach(){
+        Log.i(TAG, "onAttach()");
+        super.onDetach();
+    }
+
+    @Override
+    public void onStart(){
+        Log.i(TAG, "onStart()");
+        super.onStart();
+    }
+
+    @Override
+    public void onPause(){
+        Log.i(TAG, "onPause()");
+        super.onPause();
+    }
+
+    @Override
+    public void onResume(){
+        Log.i(TAG, "onResume()");
+        super.onResume();
+
+    }
+
+    @Override
+    public void onStop(){
+        Log.i(TAG, "onStop()");
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy(){
+        Log.i(TAG, "onDestroy()");
+        super.onDestroy();
     }
 }
