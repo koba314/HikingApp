@@ -63,7 +63,7 @@ public class PlansFragment extends Fragment {
             @Override
             public void onClick(View v){
                 CreatePlansBottomSheetDialogFragment dialog = new CreatePlansBottomSheetDialogFragment();
-                dialog.show(getParentFragmentManager(), CreatePlansBottomSheetDialogFragment.TAG);
+                dialog.show(getActivity().getSupportFragmentManager(), CreatePlansBottomSheetDialogFragment.TAG);
             }
         });
 

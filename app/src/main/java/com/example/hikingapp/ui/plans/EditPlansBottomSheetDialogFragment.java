@@ -1,5 +1,6 @@
 package com.example.hikingapp.ui.plans;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -8,10 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+
+import androidx.activity.result.ActivityResultLauncher;
 
 import com.example.hikingapp.R;
 import com.example.hikingapp.data.HikingPlanDataSource;
 import com.example.hikingapp.model.HikingPlan;
+import com.example.hikingapp.ui.map.MapLocationSelectorActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.time.OffsetDateTime;
@@ -57,6 +63,27 @@ public class EditPlansBottomSheetDialogFragment extends BottomSheetDialogFragmen
         startTime_et.setText(plan.getStartTime());
         endTime_et.setText(plan.getEndTime());
 
+        ImageView start_pos_button = root.findViewById(R.id.start_location_selector_button);
+        ImageView end_pos_button = root.findViewById(R.id.end_location_selector_button);
+        start_pos_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent i = new Intent(getContext(), MapLocationSelectorActivity.class);
+                i.putExtra(MapLocationSelectorActivity.MODE, MapLocationSelectorActivity.START);
+                i.putExtra(MapLocationSelectorActivity.START_LATITUDE, plan.getStartLatitude());
+                i.putExtra(MapLocationSelectorActivity.START_LONGITUDE, plan.getStartLongitude());
+                i.putExtra(MapLocationSelectorActivity.END_LATITUDE, plan.getEndLatitude());
+                i.putExtra(MapLocationSelectorActivity.END_LONGITUDE, plan.getEndLongitude());
+                startActivity(i);
+            }
+        });
+        end_pos_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+
         Button save_button = root.findViewById(R.id.plan_save_button);
         Button delete_button = root.findViewById(R.id.plan_delete_button);
         save_button.setOnClickListener(new View.OnClickListener(){
@@ -75,7 +102,6 @@ public class EditPlansBottomSheetDialogFragment extends BottomSheetDialogFragmen
                 dismiss();
             }
         });
-
         delete_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
