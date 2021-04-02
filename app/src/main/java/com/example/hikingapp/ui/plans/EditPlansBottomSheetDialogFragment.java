@@ -12,8 +12,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.activity.result.ActivityResultLauncher;
-
 import com.example.hikingapp.R;
 import com.example.hikingapp.data.HikingPlanDataSource;
 import com.example.hikingapp.model.HikingPlan;
