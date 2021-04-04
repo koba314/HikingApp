@@ -106,6 +106,10 @@ public class HikingPlanDataSource {
         FirebaseUser user = auth.getCurrentUser();
         DatabaseReference dbRef = db.getReference().child("user").child(user.getUid()).child("hikingplan").child(plan.getId());
         dbRef.setValue(plan);
+        // if this plan is being activated, make sure all other plans are inactive
+        if(plan.getActive()){
+
+        }
     }
 
     public void deleteHikingPlan(HikingPlan plan){

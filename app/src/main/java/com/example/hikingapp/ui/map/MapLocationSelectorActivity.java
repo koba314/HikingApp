@@ -2,6 +2,7 @@ package com.example.hikingapp.ui.map;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -56,20 +57,40 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * MapLocationSelectorActivity
+ * An activity with a map and some preset markers.
+ *
+ * Should be called via startActivityForResult(Intent i, int resultCode).
+ * RESULT_START, RESULT, or RESULT_END will be passed back as a requestCode in OnActivityResult() of the calling activity or fragment.
+ * These pertain to getting a start position, generic position, or end position, respectively.
+ *
+ * Included is a static singleton class for setting initial locations of the map markers. Before starting this activity, get the instance
+ * of this class and set the needed positions for the map markers.
+ */
 public class MapLocationSelectorActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     public static final String TAG = "MapLocSelectorActivity";
     public static final int PERMISSION_FINE_LOCATION = 0;
+    /**
+     * Various constants to be used in the intent that launches this activity and the result sent to the caller.
+     */
     public static final String START_LATITUDE = "MapLocationSelectorActivity.START_LATITUDE";
     public static final String START_LONGITUDE = "MapLocationSelectorActivity.START_LONGITUDE";
     public static final String END_LATITUDE = "MapLocationSelectorActivity.END_LATITUDE";
     public static final String END_LONGITUDE = "MapLocationSelectorActivity.END_LONGITUDE";
+    public static final String LATITUDE = "MapLocationSelectorActivity.LATITUDE";
+    public static final String LONGITUDE = "MapLocationSelectorActivity.LONGITUDE";
     public static final String MODE = "MapLocationSelectorActivity.MODE";
     public static final String START = "MapLocationSelectorActivity.START";
+    public static final String GENERIC = "MapLocationSelectorActivity.GENERIC";
     public static final String END = "MapLocationSelectorActivity.END";
-    private static final String DROPPED_MARKER_LAYER_ID = "DROPPED_MARKER_LAYER_ID";
+    public static final int RESULT_START = 1;
+    public static final int RESULT = 2;
+    public static final int RESULT_END = 3;
 
     private static final String ID_ICON_RED = "ID_ICON_RED";
     private static final String ID_ICON_GRAY = "ID_ICON_GRAY";
@@ -81,7 +102,7 @@ public class MapLocationSelectorActivity extends AppCompatActivity implements Ac
     private ImageView hoveringMarker;
 
     private boolean hasLocationPermission = false;
-    private boolean gettingStartPos;
+    private String mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +110,11 @@ public class MapLocationSelectorActivity extends AppCompatActivity implements Ac
 
         Intent i = getIntent();
         if(i.getStringExtra(MODE).equals(START)){
-            gettingStartPos = true;
+            mode = START;
         }else if(i.getStringExtra(MODE).equals(END)){
-            gettingStartPos = false;
+            mode = END;
+        }else if(i.getStringExtra(MODE).equals(GENERIC)){
+            mode = GENERIC;
         }
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
@@ -112,12 +135,22 @@ public class MapLocationSelectorActivity extends AppCompatActivity implements Ac
         confirmButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                MapLocations locations = MapLocations.getInstance();
                 LatLng mapTarget = mapboxMap.getCameraPosition().target;
-                if(gettingStartPos){
-                    locations.setStart(mapTarget);
+                if(mode.equals(START)){
+                    Intent i = new Intent();
+                    i.putExtra(START_LATITUDE, mapTarget.getLatitude());
+                    i.putExtra(START_LONGITUDE, mapTarget.getLongitude());
+                    setResult(RESULT_START, i);
+                }else if(mode.equals(END)){
+                    Intent i = new Intent();
+                    i.putExtra(END_LATITUDE, mapTarget.getLatitude());
+                    i.putExtra(END_LONGITUDE, mapTarget.getLongitude());
+                    setResult(RESULT_END, i);
                 }else{
-                    locations.setEnd(mapTarget);
+                    Intent i = new Intent();
+                    i.putExtra(LATITUDE, mapTarget.getLatitude());
+                    i.putExtra(LONGITUDE, mapTarget.getLongitude());
+                    setResult(RESULT, i);
                 }
                 finish();
             }
@@ -154,20 +187,45 @@ public class MapLocationSelectorActivity extends AppCompatActivity implements Ac
                     mapboxMap.setStyle(builder, new Style.OnStyleLoaded(){
                         @Override
                         public void onStyleLoaded(@NonNull Style style){
-                            MapLocations locations = MapLocations.getInstance();
-                            CameraPosition.Builder b = new CameraPosition.Builder()
-                                    .zoom(12)
-                                    .target(locations.getStart());
-                            if(gettingStartPos){
-                                b.target(locations.getStart());
-                            }else{
-                                b.target(locations.getEnd());
-                            }
-                            CameraPosition cameraPosition = b.build();
-                            mapboxMap.setCameraPosition(cameraPosition);
                             setUpLocationComponent(style);
                             setUpHoveringMarker(style);
                             setUpExistingMarkers(style);
+
+                            MapLocations locations = MapLocations.getInstance();
+                            CameraPosition.Builder b = new CameraPosition.Builder()
+                                    .zoom(12);
+                            // Sets camera target to current location or start/end marker based on context.
+                            if(mode.equals(START)){
+                                if(locations.getStart() != null){
+                                    b.target(locations.getStart());
+                                }else{
+                                    try {
+                                        double lat = mapboxMap.getLocationComponent().getLastKnownLocation().getLatitude();
+                                        double lng = mapboxMap.getLocationComponent().getLastKnownLocation().getLongitude();
+                                        LatLng pos = new LatLng(lat,lng);
+                                        b.target(pos);
+                                    }catch(NullPointerException e){
+                                        Log.w(TAG, "unable to get location!");
+                                    }
+                                }
+                            }else if(mode.equals(END)){
+                                if(locations.getEnd() != null){
+                                    b.target(locations.getEnd());
+                                    CameraPosition cameraPosition = b.build();
+                                    mapboxMap.setCameraPosition(cameraPosition);
+                                }else{
+                                    try {
+                                        double lat = mapboxMap.getLocationComponent().getLastKnownLocation().getLatitude();
+                                        double lng = mapboxMap.getLocationComponent().getLastKnownLocation().getLongitude();
+                                        LatLng pos = new LatLng(lat,lng);
+                                        b.target(pos);
+                                    }catch(NullPointerException e){
+                                        Log.w(TAG, "unable to get location!");
+                                    }
+                                }
+                            }
+                            CameraPosition cameraPosition = b.build();
+                            mapboxMap.setCameraPosition(cameraPosition);
                         }
                     });
                 }
@@ -215,8 +273,8 @@ public class MapLocationSelectorActivity extends AppCompatActivity implements Ac
                         .locationComponentOptions(options)
                         .build());
         locationComponent.setLocationComponentEnabled(true);
-        locationComponent.setCameraMode(CameraMode.NONE_GPS);
-        locationComponent.setRenderMode(RenderMode.GPS);
+        locationComponent.setCameraMode(CameraMode.NONE);
+        locationComponent.setRenderMode(RenderMode.NORMAL);
     }
 
     private void setUpExistingMarkers(Style style){
@@ -225,23 +283,27 @@ public class MapLocationSelectorActivity extends AppCompatActivity implements Ac
         SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, style);
         symbolManager.setIconAllowOverlap(true);
 
-        if(gettingStartPos){
-            Symbol symbol = symbolManager.create(new SymbolOptions()
-                    .withLatLng(locations.getEnd())
-                    .withIconImage(ID_ICON_RED));
-        }else{
-            Symbol symbol = symbolManager.create(new SymbolOptions()
-                    .withLatLng(locations.getStart())
-                    .withIconImage(ID_ICON_GREEN));
+        if(mode.equals(START)){
+            if(locations.getEnd() != null){
+                Symbol symbol = symbolManager.create(new SymbolOptions()
+                        .withLatLng(locations.getEnd())
+                        .withIconImage(ID_ICON_RED));
+            }
+        }else if(mode.equals(END)){
+            if(locations.getStart() != null){
+                Symbol symbol = symbolManager.create(new SymbolOptions()
+                        .withLatLng(locations.getStart())
+                        .withIconImage(ID_ICON_GREEN));
+            }
         }
     }
 
     private void setUpHoveringMarker(Style style){
         // Add the marker image to the view
         hoveringMarker = new ImageView(MapLocationSelectorActivity.this);
-        if(gettingStartPos){
+        if(mode.equals(START)){
             hoveringMarker.setImageResource(R.drawable.ic_mapbox_marker_icon_green);
-        }else{
+        }else if(mode.equals(END)){
             hoveringMarker.setImageResource(R.drawable.ic_mapbox_marker_icon_red);
         }
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
@@ -267,7 +329,6 @@ public class MapLocationSelectorActivity extends AppCompatActivity implements Ac
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_FINE_LOCATION && permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.i(TAG, "Location permission granted");
@@ -317,15 +378,27 @@ public class MapLocationSelectorActivity extends AppCompatActivity implements Ac
     }
 
     @Override
+    public void onLowMemory(){
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState){
         Log.i(TAG, "onSaveInstanceState()");
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
 
+    /**
+     * MapLocations
+     * Nested Singleton class for the purposes of easily providing start and end positions to the map,
+     * as well as an number of other generic markers.
+     */
     public static class MapLocations {
         private LatLng start;
         private LatLng end;
+        private List<LatLng> markers;
         private static MapLocations instance;
         private MapLocations(){
         }
@@ -335,10 +408,12 @@ public class MapLocationSelectorActivity extends AppCompatActivity implements Ac
             }
             return instance;
         }
-        public LatLng getStart(){ return start; }
-        public void setStart(LatLng start){ this.start = start; }
-        public LatLng getEnd(){ return end; }
-        public void setEnd(LatLng end){ this.end = end; }
+        public List<LatLng> getMarkers(){ return markers; }
+        public void setMarkers(List<LatLng> markers) { this.markers = markers; }
+        @Nullable public LatLng getStart(){ return start; }
+        public void setStart(@Nullable LatLng start){ this.start = start; }
+        @Nullable public LatLng getEnd(){ return end; }
+        public void setEnd(@Nullable LatLng end){ this.end = end; }
     }
 
     private static class LocationListeningCallback implements LocationEngineCallback<LocationEngineResult> {

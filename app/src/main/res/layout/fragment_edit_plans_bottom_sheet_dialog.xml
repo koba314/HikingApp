@@ -94,15 +94,33 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ImageView
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/start_location_selector_button"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_baseline_pin_drop_24"
                 app:layout_constraintBottom_toBottomOf="@id/start_long_cl"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/start_long_cl"
-                app:layout_constraintTop_toTopOf="@id/start_long_cl"></ImageView>
+                app:layout_constraintTop_toTopOf="@id/start_long_cl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/start_location_selector_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_mapbox_marker_icon_green"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"></ImageView>
+
+                <TextView
+                    app:layout_constraintStart_toStartOf="@id/start_location_selector_iv"
+                    app:layout_constraintEnd_toEndOf="@id/start_location_selector_iv"
+                    app:layout_constraintTop_toBottomOf="@id/start_location_selector_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_open_map"></TextView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
@@ -168,16 +186,33 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ImageView
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/end_location_selector_button"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_baseline_pin_drop_24"
-                app:layout_constraintStart_toStartOf="@id/end_long_cl"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/end_long_cl"
                 app:layout_constraintBottom_toBottomOf="@id/end_long_cl"
-                ></ImageView>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/end_long_cl"
+                app:layout_constraintTop_toTopOf="@id/end_long_cl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/end_location_selector_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_mapbox_marker_icon_red"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"></ImageView>
+
+                <TextView
+                    app:layout_constraintStart_toStartOf="@id/end_location_selector_iv"
+                    app:layout_constraintEnd_toEndOf="@id/end_location_selector_iv"
+                    app:layout_constraintTop_toBottomOf="@id/end_location_selector_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_open_map"></TextView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
@@ -188,9 +223,9 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
                 <TextView
-                    android:id="@+id/plan_startTime_tv"
+                    android:id="@+id/plan_startTime_header_tv"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     android:layout_width="wrap_content"
@@ -199,17 +234,18 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"></TextView>
 
-                <EditText
-                    android:id="@+id/plan_startTime_et"
+                <Button
+                    android:id="@+id/plan_startTime_button"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/plan_startTime_tv"
-                    android:layout_width="150dp"
+                    app:layout_constraintTop_toBottomOf="@id/plan_startTime_header_tv"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/plan_startTime"
                     android:layout_marginLeft="10dp"
-                    android:inputType="time"
-                    android:imeOptions="actionDone"
-                    ></EditText>
+                    android:textSize="20dp"
+                    android:text="10:00"
+                    ></Button>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -217,7 +253,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:id="@+id/plan_endTime_tv"
+                    android:id="@+id/plan_endTime_header_tv"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     android:layout_width="wrap_content"
@@ -226,17 +262,72 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"></TextView>
 
-                <EditText
-                    android:id="@+id/plan_endTime_et"
+                <Button
+                    android:id="@+id/plan_endTime_button"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/plan_endTime_tv"
-                    android:layout_width="150dp"
+                    app:layout_constraintTop_toBottomOf="@id/plan_endTime_header_tv"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/plan_endTime"
                     android:layout_marginLeft="10dp"
-                    android:inputType="time"
-                    android:imeOptions="actionDone"
-                    ></EditText>
+                    android:textSize="20dp"
+                    android:text="10:00"
+                    ></Button>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/plan_startDate_header_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plan_startDate"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"></TextView>
+
+                <Button
+                    android:id="@+id/plan_startDate_button"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/plan_startDate_header_tv"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="2021/4/5"
+                    ></Button>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/plan_endDate_header_tv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/plan_endDate"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"></TextView>
+
+                <Button
+                    android:id="@+id/plan_endDate_button"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/plan_endDate_header_tv"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="2021/4/5"
+                    ></Button>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

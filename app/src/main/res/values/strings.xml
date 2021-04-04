@@ -24,12 +24,20 @@
     <string name="login_failed">"Login failed"</string>
     <string name="action_save">Save</string>
     <string name="action_create_plan">Create new plan</string>
+    <string name="action_view_active_plan">View active plan</string>
+    <string name="action_activate_plan">Activate plan</string>
+    <string name="action_deactivate_plan">Deactivate plan</string>
     <string name="action_edit">Edit</string>
     <string name="action_view">View</string>
     <string name="action_delete">Delete</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_open_map">Open Map</string>
+    <string name="action_check_in">Check in</string>
     <string name="editing_plan">Editing plan: </string>
     <string name="creating_plan">Creating plan: </string>
+    <string name="active_plan_warning">Check in by:</string>
+    <string name="time_remaining">Time remaining:</string>
+    <string name="active_plan">Active plan:</string>
     <string name="plan_name">Plan name</string>
     <string name="plan_startLatitude">Start latitude</string>
     <string name="plan_startLongitude">Start longitude</string>
@@ -37,6 +45,8 @@
     <string name="plan_endLongitude">End longitude</string>
     <string name="plan_startTime">Start time</string>
     <string name="plan_endTime">End time</string>
+    <string name="plan_startDate">Start date</string>
+    <string name="plan_endDate">End date</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- MAPBOX PUBLIC TOKEN -->

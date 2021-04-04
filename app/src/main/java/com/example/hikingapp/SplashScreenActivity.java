@@ -16,6 +16,7 @@ import com.example.hikingapp.ui.login.LoginActivity;
 import com.example.hikingapp.ui.map.MapFragment;
 import com.example.hikingapp.ui.plans.PlansFragment;
 import com.example.hikingapp.ui.settings.SettingsFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -33,7 +34,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         loginRegisterButton = findViewById(R.id.login_register_button);
         logoutButton = findViewById(R.id.logout_button);
-
     }
 
     /*
@@ -107,8 +107,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     public void onResume(){
         Log.i(TAG, "onResume()");
         super.onResume();
-        //could use a viewmodel to model the login status, but seems unnecessary
-        if(LoginRepository.getInstance(LoginDataSource.getInstance()).isLoggedIn()){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if(auth.getCurrentUser() != null){
             loginRegisterButton.setVisibility(View.GONE);
             logoutButton.setVisibility(View.VISIBLE);
         }

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hikingapp.R;
+import com.example.hikingapp.data.HikingPlanDataSource;
 import com.example.hikingapp.model.HikingPlan;
 
 import java.util.List;
@@ -55,6 +56,17 @@ public class PlansFragment extends Fragment {
         plansViewModel.getPlans().observe(getViewLifecycleOwner(), new Observer<List<HikingPlan>>() {
             @Override
             public void onChanged(@Nullable List<HikingPlan> plans){
+                if(plans != null){
+                    Log.i(TAG, "plans changed");
+                    mPlansRecyclerView.setAdapter(new PlanAdapter(plans));
+                }
+            }
+        });
+
+        plansViewModel.getPlanToEdit().observe(getViewLifecycleOwner(), new Observer<HikingPlan>() {
+            @Override
+            public void onChanged(HikingPlan hikingPlan) {
+                Log.i(TAG, "planToEdit changed");
                 mPlansRecyclerView.setAdapter(new PlanAdapter(plansViewModel.getPlans().getValue()));
             }
         });
@@ -80,6 +92,7 @@ public class PlansFragment extends Fragment {
         private HikingPlan plan;
         private Button editPlanButton;
         private Button viewPlanButton;
+        private View checkbox;
         private String title;
         private TextView titleView;
 
@@ -87,6 +100,7 @@ public class PlansFragment extends Fragment {
             super(inflater.inflate(R.layout.list_item_plan, parent, false));
             viewPlanButton = itemView.findViewById(R.id.view_plan_button);
             editPlanButton = itemView.findViewById(R.id.edit_plan_button);
+            checkbox = itemView.findViewById(R.id.checkbox_cl);
             editPlanButton.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v){
@@ -107,6 +121,7 @@ public class PlansFragment extends Fragment {
                     dialog.show(getParentFragmentManager(), ViewPlansBottomSheetDialogFragment.TAG);
                 }
             });
+
             titleView = itemView.findViewById(R.id.title);
         }
 
@@ -114,6 +129,26 @@ public class PlansFragment extends Fragment {
             this.plan = plan;
             title = plan.getName();
             titleView.setText(title);
+            if(plan.getActive()){
+                editPlanButton.setVisibility(View.GONE);
+                itemView.findViewById(R.id.empty_checkbox).setVisibility(View.GONE);
+                itemView.findViewById(R.id.active_checkbox).setVisibility(View.VISIBLE);
+                itemView.findViewById(R.id.active_tv).setVisibility(View.VISIBLE);
+            }else if (plan.getVisible()){
+                itemView.findViewById(R.id.empty_checkbox).setVisibility(View.GONE);
+                itemView.findViewById(R.id.show_checkbox).setVisibility(View.VISIBLE);
+            }
+            checkbox.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v){
+                    if (!plan.getActive()) {
+                        // toggle visibility
+                        plan.setVisible(!plan.getVisible());
+                        // update plan
+                        plansViewModel.updateHikingPlan(plan);
+                    }
+                }
+            });
         }
     }
 

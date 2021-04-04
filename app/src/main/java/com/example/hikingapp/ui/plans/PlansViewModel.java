@@ -38,7 +38,53 @@ public class PlansViewModel extends ViewModel implements HikingPlanDataSource.Hi
     public LiveData<HikingPlan> getPlanToEdit(){ return planToEdit; }
     public void setPlanToEdit(HikingPlan plan){ planToEdit.setValue(plan); }
 
+    /**
+     * Activates a hiking plan by setting it active, updating the data source, and
+     * deactivating all other plans in the data source.
+     * @param plan the HikingPlan to activate
+     */
+    public void activateHikingPlan(HikingPlan plan){
+        //enforce constraint of only one active hiking plan
+        deactivateHikingPlans();
+        plan.setCheckedIn(false);
+        plan.setActive(true);
+        hikingPlanDataSource.updateHikingPlan(plan);
+    }
+
+    /**
+     * Deactivates ALL hiking plans in the data source.
+     */
+    public void deactivateHikingPlans(){
+        List<HikingPlan> plans = mPlans.getValue();
+        if(plans != null){
+            for(HikingPlan plan : plans){
+                plan.setActive(false);
+                hikingPlanDataSource.updateHikingPlan(plan);
+            }
+        }
+    }
+
+    public void createHikingPlan(HikingPlan plan){
+        hikingPlanDataSource.createHikingPlan(plan);
+    }
+
+    public void updateHikingPlan(HikingPlan plan){
+        hikingPlanDataSource.updateHikingPlan(plan);
+    }
+
+    public void deleteHikingPlan(HikingPlan plan){
+        hikingPlanDataSource.deleteHikingPlan(plan);
+    }
+
     public void onGetHikingPlans(List<HikingPlan> plans){
+        // always put the active plan first
+        for(HikingPlan plan : plans){
+            if(plan.getActive()){
+                plans.remove(plan);
+                plans.add(0, plan);
+                break;
+            }
+        }
         mPlans.setValue(plans);
     }
 }
