@@ -4,9 +4,11 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.hikingapp.model.EmergencyContact;
+import com.example.hikingapp.model.HikingPlan;
+import com.example.hikingapp.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,10 +50,7 @@ public class UserDataSource {
                     User user = new User();
                     List<EmergencyContact> emergencyContact = new LinkedList<EmergencyContact>();
                     for(DataSnapshot shot: snapshot.child("emergency_contact").getChildren()) {
-                        EmergencyContact e =
-                                new EmergencyContact(shot.child("name").getValue(String.class),
-                                        shot.child("phone_number").getValue(Integer.class),
-                                        shot.child("message").getValue(String.class));
+                        EmergencyContact e = shot.getValue(EmergencyContact.class);
                         emergencyContact.add(e);
                     }
                     user.setEmergencyContacts(emergencyContact);
@@ -67,7 +66,31 @@ public class UserDataSource {
         }
     }
 
+    public void createEmergencyContact(EmergencyContact contact){
+        FirebaseUser user = auth.getCurrentUser();
+        DatabaseReference newContact = database.getReference().child("user").child(user.getUid())
+                .child("emergency_contact").push();
+        contact.setId(newContact.getKey());
+        newContact.setValue(contact);
+    }
+
+    public void updateEmergencyContact(EmergencyContact contact) {
+        FirebaseUser user = auth.getCurrentUser();
+        DatabaseReference dbRef = database.getReference().child("user").child(user.getUid())
+                .child("emergency_contact").child(contact.getId());
+        dbRef.setValue(contact);
+    }
+
+    public void deleteEmergencyContact(EmergencyContact contact) {
+        FirebaseUser user = auth.getCurrentUser();
+        DatabaseReference dbRef = database.getReference().child("user").child(user.getUid())
+                .child("emergency_contact").child(contact.getId());
+        dbRef.removeValue();
+    }
+
     public void registerListener(UserListener listener){
         this.listener = listener;
     }
+
+
 }

@@ -1,8 +1,7 @@
 package com.example.hikingapp.data;
 
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.example.hikingapp.model.EmergencyContact;
+import com.example.hikingapp.model.User;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +34,13 @@ public class UserRepository implements UserListener {
         }
     }
 
+
+
     public void registerListener(UserListener listener){
         this.listener.add(listener);
     }
+
+    public void createEmergencyContact(EmergencyContact contact) { dataSource.createEmergencyContact(contact);}
+    public void updateEmergencyContact(EmergencyContact contact) { dataSource.updateEmergencyContact(contact);}
+    public void deleteEmergencyContact(EmergencyContact contact) { dataSource.deleteEmergencyContact(contact);}
 }

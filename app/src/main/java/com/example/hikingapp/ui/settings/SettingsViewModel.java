@@ -1,17 +1,17 @@
 package com.example.hikingapp.ui.settings;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.hikingapp.data.EmergencyContact;
-import com.example.hikingapp.data.User;
+import com.example.hikingapp.model.EmergencyContact;
+import com.example.hikingapp.model.HikingPlan;
+import com.example.hikingapp.model.User;
 import com.example.hikingapp.data.UserDataSource;
 import com.example.hikingapp.data.UserListener;
 import com.example.hikingapp.data.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SettingsViewModel extends ViewModel implements UserListener {
@@ -22,9 +22,15 @@ public class SettingsViewModel extends ViewModel implements UserListener {
     private MutableLiveData<String> emergencyContactMessageText;
     private MutableLiveData<String> emergencyContactButtonText;
     private UserRepository userRepository;
+    private MutableLiveData<List<EmergencyContact>> mEmergengyContact;
+    private MutableLiveData<EmergencyContact> contactToEdit;
 
     public SettingsViewModel() {
         userRepository = UserRepository.getInstance(UserDataSource.getInstance());
+        mEmergengyContact = new MutableLiveData<List<EmergencyContact>>();
+        mEmergengyContact.setValue(new ArrayList<EmergencyContact>());
+        contactToEdit = new MutableLiveData<EmergencyContact>();
+        contactToEdit.setValue(new EmergencyContact());
         emergencyContactTitleText = new MutableLiveData<>();
         emergencyContactTitleText.setValue("Emergency Contact");
         emergencyContactButtonText = new MutableLiveData<>();
@@ -39,10 +45,9 @@ public class SettingsViewModel extends ViewModel implements UserListener {
         userRepository.userData();
     }
 
-    public void getEmergencyContact(String user_id) {
-
-    }
-
+    public void setContactToEdit(EmergencyContact contact) { contactToEdit.setValue(contact); }
+    public LiveData<EmergencyContact> getContactToEdit() { return contactToEdit;}
+    public LiveData<List<EmergencyContact>> getEmergencyContact() { return mEmergengyContact; }
     public LiveData<String> getTitleText() {
         return emergencyContactTitleText;
     }
@@ -52,12 +57,7 @@ public class SettingsViewModel extends ViewModel implements UserListener {
     public LiveData<String> getPhoneNumberText() {
         return emergencyContactPhoneNumberText;
     }
-    public LiveData<String> getMessageText() {
-        return emergencyContactMessageText;
-    }
-    public LiveData<String> getButtonText() {
-        return emergencyContactButtonText;
-    }
+    public LiveData<String> getButtonText() { return emergencyContactButtonText; }
 
     public void onUserChange(User user) {
         List<EmergencyContact> emergencyContact = user.getEmergencyContacts();
@@ -66,6 +66,11 @@ public class SettingsViewModel extends ViewModel implements UserListener {
             emergencyContactPhoneNumberText.setValue(String.valueOf(emergencyContact.get(0).getPhoneNumber()));
             emergencyContactMessageText.setValue(emergencyContact.get(0).getMessage());
         }
+        mEmergengyContact.setValue(emergencyContact);
     }
 
+
+    public void createEmergencyContact(EmergencyContact contact) { userRepository.createEmergencyContact(contact); }
+    public void updateEmergencyContact(EmergencyContact contact) { userRepository.updateEmergencyContact(contact); }
+    public void deleteEmergencyContact(EmergencyContact contact) { userRepository.deleteEmergencyContact(contact); }
 }

@@ -24,6 +24,9 @@
     <string name="login_failed">"Login failed"</string>
     <string name="action_save">Save</string>
     <string name="action_create_plan">Create new plan</string>
+    <string name="action_create_emergency_contact">Create emergency contact</string>
+    <string name="action_set_default">Set Default</string>
+    <string name="action_view_emergency_contact">View all</string>
     <string name="action_view_active_plan">View active plan</string>
     <string name="action_activate_plan">Activate plan</string>
     <string name="action_deactivate_plan">Deactivate plan</string>
@@ -47,6 +50,9 @@
     <string name="plan_endTime">End time</string>
     <string name="plan_startDate">Start date</string>
     <string name="plan_endDate">End date</string>
+    <string name="contact_name">Contact Name</string>
+    <string name="contact_phone_numer">Phone Number</string>
+    <string name="contact_message">Message</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- MAPBOX PUBLIC TOKEN -->
