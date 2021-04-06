@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.hikingapp.model.HikingPlan;
 import com.example.hikingapp.ui.map.MapFragment;
@@ -107,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 mapViewModel.checkIn();
+                topBar.setVisibility(View.GONE);
+                Toast.makeText(getApplicationContext(), "Checked in!", Toast.LENGTH_LONG).show();
             }
         });
 

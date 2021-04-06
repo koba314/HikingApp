@@ -263,7 +263,12 @@ public class EditPlansBottomSheetDialogFragment extends BottomSheetDialogFragmen
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute){
             Log.i(EditPlansBottomSheetDialogFragment.TAG, "timepicker got a time: " + hourOfDay + ":" + minute);
-            String time = hourOfDay + ":" + minute;
+            String time = hourOfDay + ":";
+            if(minute < 10){
+                time += "0" + minute;
+            }else{
+                time += minute;
+            }
             if(listener != null){
                 if(startTime){
                     listener.startTime_button.setText(time);

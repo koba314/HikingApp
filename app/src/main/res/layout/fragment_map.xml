@@ -7,18 +7,66 @@
     android:layout_height="match_parent"
     tools:context=".ui.map.MapFragment" >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/my_location_cl"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+        <ImageView
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_my_location_24"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            >
+        </ImageView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/add_pin_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/action_add_pin"
+        app:icon="@drawable/ic_baseline_add_box_24"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="10dp">
+    </Button>
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/confirm_pin_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/action_confirm"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="10dp">
+    </Button>
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/cancel_pin_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/action_cancel"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="10dp">
+    </Button>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

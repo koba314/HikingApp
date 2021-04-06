@@ -149,8 +149,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(emailEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    if(loginViewModel.getLoginViewState().getValue().getState().equals(LoginViewState.STATE_REGISTER)){
+                        loginViewModel.register(usernameEditText.getText().toString(), emailEditText.getText().toString(), passwordEditText.getText().toString());
+                    }else{
+                        loginViewModel.login(emailEditText.getText().toString(),
+                                passwordEditText.getText().toString());
+                    }
                 }
                 return false;
             }

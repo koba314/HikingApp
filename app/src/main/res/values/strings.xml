@@ -36,6 +36,8 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_open_map">Open Map</string>
     <string name="action_check_in">Check in</string>
+    <string name="action_add_pin">Add pin</string>
+    <string name="action_confirm">Confirm</string>
     <string name="editing_plan">Editing plan: </string>
     <string name="creating_plan">Creating plan: </string>
     <string name="active_plan_warning">Check in by:</string>

@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.hikingapp.data.HikingPlanDataSource;
+import com.example.hikingapp.data.MapPinDataSource;
 import com.example.hikingapp.model.HikingPlan;
 import com.example.hikingapp.model.MapPin;
 import com.mapbox.android.core.location.LocationEngineCallback;
@@ -18,38 +19,55 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapViewModel extends ViewModel implements HikingPlanDataSource.HikingPlanListener {
+public class MapViewModel extends ViewModel implements HikingPlanDataSource.HikingPlanListener, MapPinDataSource.MapPinListener {
 
     private HikingPlanDataSource hikingPlanDataSource;
+    private MapPinDataSource mapPinDataSource;
 
-    private MutableLiveData<String> mText;
-    private MutableLiveData<List<MapPin>> mPins;
     private MutableLiveData<LatLng> mPos;
     private MutableLiveData<HikingPlan> mActiveHikingPlan;
     private MutableLiveData<List<HikingPlan>> mVisibleHikingPlans;
+    private MutableLiveData<List<MapPin>> mPublicPins;
+    private MutableLiveData<List<MapPin>> mUserPins;
+    private MutableLiveData<List<MapPin>> mVisiblePins;
+    private MutableLiveData<MapPin> mPinToView;
+
+    private MutableLiveData<LatLng> mCameraPos;
+    private MutableLiveData<Double> mZoomLevel;
 
     public MapViewModel() {
         hikingPlanDataSource = HikingPlanDataSource.getInstance();
         hikingPlanDataSource.initHikingPlansListener(this);
-        mText = new MutableLiveData<>();
-        mText.setValue("TODO: map fragment");
-        mPins = new MutableLiveData<>();
+        mapPinDataSource = MapPinDataSource.getInstance();
+        mapPinDataSource.initMapPinListener(this);
         mPos = new MutableLiveData<>();
         mActiveHikingPlan = new MutableLiveData<>();
         mVisibleHikingPlans = new MutableLiveData<>();
+        mPublicPins = new MutableLiveData<>();
+        mUserPins = new MutableLiveData<>();
+        mVisiblePins = new MutableLiveData<>();
+        mPinToView = new MutableLiveData<>();
+
+        mCameraPos = new MutableLiveData<>();
+        mZoomLevel = new MutableLiveData<>();
     }
 
-    public LiveData<List<MapPin>> getPins() { return mPins; }
+    public LiveData<MapPin> getPinToView(){ return mPinToView; }
+    public void setPinToView(MapPin pin){ this.mPinToView.setValue(pin); }
 
     public LiveData<HikingPlan> getActivePlan(){ return mActiveHikingPlan; }
     public LiveData<List<HikingPlan>> getVisiblePlans() { return mVisibleHikingPlans; }
 
+    public LiveData<List<MapPin>> getPublicPins() { return mPublicPins; }
+    public LiveData<List<MapPin>> getUserPins() { return mUserPins; }
+
     public LiveData<LatLng> getPos() { return mPos; }
     public void setPos(LatLng pos) { mPos.setValue(pos); }
 
-    public LiveData<String> getText() {
-        return mText;
-    }
+    public LiveData<LatLng> getCameraPos(){ return mCameraPos; }
+    public void setCameraPos(LatLng pos){ mCameraPos.setValue(pos); }
+    public LiveData<Double> getZoomLevel(){ return mZoomLevel; }
+    public void setZoomLevel(double zoom ){ mZoomLevel.setValue(zoom); }
 
     /**
      * Sets the active hiking plan as checked-in and deactivates all plans.
@@ -72,10 +90,13 @@ public class MapViewModel extends ViewModel implements HikingPlanDataSource.Hiki
         }
     }
 
+    public void createMapPin(MapPin pin){ mapPinDataSource.createMapPin(pin); }
+    public void updateMapPin(MapPin pin){ mapPinDataSource.updateMapPin(pin); }
+    public void deleteMapPin(MapPin pin){ mapPinDataSource.deleteMapPin(pin); }
+
     @Override
     public void onGetHikingPlans(List<HikingPlan> plans){
         List<HikingPlan> visiblePlans = new ArrayList<>();
-        mActiveHikingPlan.setValue(null);
         // get the active plan and visible plans
         for(HikingPlan plan : plans){
             if(plan.getActive()){
@@ -86,6 +107,16 @@ public class MapViewModel extends ViewModel implements HikingPlanDataSource.Hiki
             }
         }
         mVisibleHikingPlans.setValue(visiblePlans);
+    }
+
+    @Override
+    public void onGetOtherMapPins(List<MapPin> pins){
+        mPublicPins.setValue(pins);
+    }
+
+    @Override
+    public void onGetUserMapPins(List<MapPin> pins){
+        mUserPins.setValue(pins);
     }
 
 }

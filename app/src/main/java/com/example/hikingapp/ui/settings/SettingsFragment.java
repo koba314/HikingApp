@@ -31,7 +31,7 @@ public class SettingsFragment extends Fragment {
             ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
         settingsViewModel =
-                new ViewModelProvider(this).get(SettingsViewModel.class);
+                new ViewModelProvider(requireActivity()).get(SettingsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
         final TextView emergencyContactTitle = root.findViewById(R.id.text_emergency_contact_title);
         final TextView emergencyContactName = root.findViewById(R.id.text_emergency_contact_name);

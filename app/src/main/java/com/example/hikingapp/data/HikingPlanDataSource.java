@@ -50,7 +50,7 @@ public class HikingPlanDataSource {
         newPlan.setValue(plan);
     }
 
-    /*
+    /**
      * initHikingPlansListener
      * Sets up a value event listener on the firebase DB and links it to a desired callback to receive the data
      * @param listener: the HikingPlanListener implementing the callback to receive data changes
@@ -76,7 +76,7 @@ public class HikingPlanDataSource {
         db.getReference().child("user").child(user.getUid()).child("hikingplan").addValueEventListener(dbListener);
     }
 
-    /*
+    /**
      * getHikingPlans
      * Gets all hiking plans for the current user once.
      * @param listener: the HikingPlanListener implementing the callback to receive data
@@ -106,10 +106,6 @@ public class HikingPlanDataSource {
         FirebaseUser user = auth.getCurrentUser();
         DatabaseReference dbRef = db.getReference().child("user").child(user.getUid()).child("hikingplan").child(plan.getId());
         dbRef.setValue(plan);
-        // if this plan is being activated, make sure all other plans are inactive
-        if(plan.getActive()){
-
-        }
     }
 
     public void deleteHikingPlan(HikingPlan plan){

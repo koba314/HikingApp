@@ -10,9 +10,13 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +30,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.hikingapp.MainActivity;
 import com.example.hikingapp.R;
 import com.example.hikingapp.model.HikingPlan;
+import com.example.hikingapp.model.MapPin;
 import com.example.hikingapp.ui.plans.ViewPlansBottomSheetDialogFragment;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
@@ -39,6 +44,8 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdate;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
@@ -50,6 +57,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
@@ -69,21 +77,30 @@ import java.util.Map;
 
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, OnSymbolClickListener {
 
     public static final String TAG = "MapFragment";
     public static final String MAP_FRAGMENT = "com.hikingapp.MAP_FRAGMENT";
     public static final int PERMISSION_FINE_LOCATION = 0;
+    public static final String ADDING_PIN = "ADDING_PIN";
+    public static final String DEFAULT = "DEFAULT";
+    public String state = DEFAULT;
 
     private MapViewModel mapViewModel;
     private MapView mapView;
     private LocationEngine locationEngine;
     private MapboxMap mapboxMap;
     private SymbolManager symbolManager;
-    private Symbol start;
-    private Symbol end;
+    private SymbolManager pinSymbolManager;
     private Map<Symbol, HikingPlan> startMarkers = new HashMap<>();
     private Map<Symbol, HikingPlan> endMarkers = new HashMap<>();
+    private Map<Symbol, MapPin> pins = new HashMap<>();
+
+    private Button addPinButton;
+    private Button confirmPinButton;
+    private Button cancelPinButton;
+    private ImageView hoveringPin;
+    private View myLocationButton;
 
     private static final String PLAN_NAME = "PLAN_NAME";
     private static final String VISIBLE_PLAN_NAMES_SOURCE = "VISIBLE_PLAN_NAMES_SOURCE";
@@ -91,6 +108,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final String ID_ICON_RED = "ID_ICON_RED";
     private static final String ID_ICON_GRAY = "ID_ICON_GRAY";
     private static final String ID_ICON_GREEN = "ID_ICON_GREEN";
+    private static final String ID_ICON_BLUE = "ID_ICON_BLUE";
 
     private LocationListeningCallback locationCallback = new LocationListeningCallback(this);
 
@@ -107,6 +125,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         View root = inflater.inflate(R.layout.fragment_map, container, false);
         mapView = root.findViewById(R.id.mapView);
+        addPinButton = root.findViewById(R.id.add_pin_button);
+        confirmPinButton = root.findViewById(R.id.confirm_pin_button);
+        cancelPinButton = root.findViewById(R.id.cancel_pin_button);
+        myLocationButton = root.findViewById(R.id.my_location_cl);
+
         return root;
     }
 
@@ -170,6 +193,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Drawable dMarkerGray = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_mapbox_marker_icon_gray, requireActivity().getTheme());
         Drawable dMarkerGreen = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_mapbox_marker_icon_green, requireActivity().getTheme());
         Drawable dMarkerRed = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_mapbox_marker_icon_red, requireActivity().getTheme());
+        Drawable dMarkerBlue = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_mapbox_marker_icon_blue, requireActivity().getTheme());
 
         Style.Builder builder = new Style.Builder()
                 .fromUri(Style.OUTDOORS);
@@ -182,21 +206,44 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if(dMarkerRed != null){
             builder.withImage(ID_ICON_RED, dMarkerRed);
         }
+        if(dMarkerBlue != null){
+            builder.withImage(ID_ICON_BLUE, dMarkerBlue);
+        }
 
         mapboxMap.setStyle(builder, new Style.OnStyleLoaded(){
             @Override
             public void onStyleLoaded(@NonNull Style style){
                 if(hasLocationPermission){
-                    CameraPosition cameraPosition = new CameraPosition.Builder()
-                            .target(mapViewModel.getPos().getValue())
-                            .zoom(12)
-                            .build();
-                    mapboxMap.setCameraPosition(cameraPosition);
                     setUpLocationComponent(style);
                 }
+                if(mapViewModel.getCameraPos().getValue() != null && mapViewModel.getZoomLevel().getValue() != null){
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(mapViewModel.getCameraPos().getValue())
+                            .zoom(mapViewModel.getZoomLevel().getValue())
+                            .build();
+                    mapboxMap.setCameraPosition(cameraPosition);
+                } else if(hasLocationPermission){
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(mapViewModel.getPos().getValue())
+                            .zoom(15)
+                            .build();
+                    mapboxMap.setCameraPosition(cameraPosition);
+                }
+                setMapButtonClickListeners();
                 setUpPlanMarkers(style);
+                setUpPins(style);
+
             }
         });
+
+        mapboxMap.addOnCameraMoveListener(new MapboxMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                mapViewModel.setCameraPos(mapboxMap.getCameraPosition().target);
+                mapViewModel.setZoomLevel(mapboxMap.getCameraPosition().zoom);
+            }
+        });
+
     }
 
     @SuppressLint("MissingPermission")
@@ -216,7 +263,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void setUpPlanMarkers(Style style, List<HikingPlan> plans){
-        Log.i(TAG, "setUpPlanMarkers for " + plans.size());
+        Log.i(TAG, "setUpPlanMarkers for " + plans.size() + " plans");
+
         if(symbolManager != null){
             symbolManager.deleteAll();
         }
@@ -278,59 +326,163 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void setUpActivePlanMarkers(Style style, HikingPlan plan){
-        symbolManager = new SymbolManager(mapView, mapboxMap, style);
-        symbolManager.setIconAllowOverlap(true);
-        start = symbolManager.create(new SymbolOptions()
-                .withLatLng(new LatLng(plan.getStartLatitude(), plan.getStartLongitude()))
-                .withIconImage(ID_ICON_GREEN));
-
-        end = symbolManager.create(new SymbolOptions()
-                .withLatLng(new LatLng(plan.getEndLatitude(), plan.getEndLongitude()))
-                .withIconImage(ID_ICON_RED));
-
-    }
-
-    private void updateActivePlanMarkers(Style style, HikingPlan plan){
-        assert(symbolManager != null);
-        symbolManager.setIconAllowOverlap(true);
-        if(start == null){
-            start = symbolManager.create(new SymbolOptions()
-                    .withLatLng(new LatLng(plan.getStartLatitude(), plan.getStartLongitude()))
-                    .withIconImage(ID_ICON_GREEN));
-        }else{
-            start.setLatLng(new LatLng(plan.getStartLatitude(), plan.getStartLongitude()));
-        }
-        if(end == null) {
-            end = symbolManager.create(new SymbolOptions()
-                    .withLatLng(new LatLng(plan.getEndLatitude(), plan.getEndLongitude()))
-                    .withIconImage(ID_ICON_RED));
-        }else{
-            end.setLatLng(new LatLng(plan.getEndLatitude(), plan.getEndLongitude()));
-        }
-    }
-
     private void setUpPlanMarkers(Style style){
-        HikingPlan plan = mapViewModel.getActivePlan().getValue();
-        if(plan != null){
-//            setUpActivePlanMarkers(style, plan);
-        }
         List<HikingPlan> plans = mapViewModel.getVisiblePlans().getValue();
         if(plans != null){
             setUpPlanMarkers(style, plans);
         }
-        mapViewModel.getActivePlan().observe(getViewLifecycleOwner(), new Observer<HikingPlan>() {
-            @Override
-            public void onChanged(HikingPlan plan) {
-//                updateActivePlanMarkers(style, plan);
-            }
-        });
         mapViewModel.getVisiblePlans().observe(getViewLifecycleOwner(), new Observer<List<HikingPlan>>() {
             @Override
             public void onChanged(List<HikingPlan> plans) {
                 setUpPlanMarkers(style, plans);
             }
         });
+    }
+
+    private void setUpPins(Style style, List<MapPin> pins, boolean areUserPins){
+        Log.i(TAG, "setUpPins for " + pins.size() + " pins");
+
+        if(pinSymbolManager != null){
+            pinSymbolManager.deleteAll();
+        }
+        pinSymbolManager = new SymbolManager(mapView, mapboxMap, style);
+        pinSymbolManager.setIconAllowOverlap(true);
+
+        String icon = ID_ICON_GRAY;
+        float size = 0.75f;
+        if(areUserPins){
+            icon = ID_ICON_BLUE;
+            size = 1f;
+        }
+
+        for(MapPin pin : pins){
+            Symbol symbol = pinSymbolManager.create(new SymbolOptions()
+                    .withLatLng(new LatLng(pin.getLatitude(), pin.getLongitude()))
+                    .withIconImage(icon)
+                    .withIconSize(size)
+                    .withIconOpacity(0.75f));
+            this.pins.put(symbol, pin);
+        }
+
+        pinSymbolManager.addClickListener(this);
+    }
+
+    @Override
+    public boolean onAnnotationClick(Symbol symbol){
+        if(pins.containsKey(symbol)){
+            MapPin pin = pins.get(symbol);
+            Log.i(TAG, "Clicked pin " + pin.getUid());
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(symbol.getLatLng())
+                    .zoom(15)
+                    .build();
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            mapViewModel.setPinToView(pin);
+            ViewPinBottomSheetDialogFragment frag = new ViewPinBottomSheetDialogFragment();
+            frag.show(getActivity().getSupportFragmentManager(), "ViewPin");
+        }
+        return false;
+    }
+
+    private void setUpPins(Style style){
+        List<MapPin> publicPins = mapViewModel.getPublicPins().getValue();
+        if(publicPins != null){
+            setUpPins(style, publicPins, false);
+        }
+        mapViewModel.getPublicPins().observe(getViewLifecycleOwner(), new Observer<List<MapPin>>() {
+            @Override
+            public void onChanged(List<MapPin> pins) {
+//                setUpPins(style, pins, true);
+            }
+        });
+        List<MapPin> userPins = mapViewModel.getUserPins().getValue();
+        if(userPins != null){
+            setUpPins(style, userPins, true);
+        }
+        mapViewModel.getUserPins().observe(getViewLifecycleOwner(), new Observer<List<MapPin>>() {
+            @Override
+            public void onChanged(List<MapPin> pins) {
+                setUpPins(style, pins, true);
+            }
+        });
+    }
+
+    private void setMapButtonClickListeners(){
+        addPinButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                addPinButton.setVisibility(View.GONE);
+                confirmPinButton.setVisibility(View.VISIBLE);
+                cancelPinButton.setVisibility(View.VISIBLE);
+                state = ADDING_PIN;
+                setUpHoveringPin();
+            }
+        });
+        confirmPinButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Log.i(TAG, "confirmed pin position: " + mapboxMap.getCameraPosition().target);
+                confirmPinButton.setVisibility(View.GONE);
+                cancelPinButton.setVisibility(View.GONE);
+                addPinButton.setVisibility(View.VISIBLE);
+                state = DEFAULT;
+                placeHoveringPin();
+                mapView.removeView(hoveringPin);
+            }
+        });
+        cancelPinButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                confirmPinButton.setVisibility(View.GONE);
+                cancelPinButton.setVisibility(View.GONE);
+                addPinButton.setVisibility(View.VISIBLE);
+                state = DEFAULT;
+                mapView.removeView(hoveringPin);
+            }
+        });
+        myLocationButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Location userLoc = mapboxMap.getLocationComponent().getLastKnownLocation();
+                LatLng userPos = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(userPos)
+                        .zoom(15)
+                        .build();
+                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        });
+    }
+
+    private void setUpHoveringPin() {
+        // Add the marker image to the view
+        hoveringPin = new ImageView(getContext());
+        hoveringPin.setImageResource(R.drawable.ic_mapbox_marker_icon_gray);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
+        hoveringPin.setLayoutParams(params);
+        mapView.addView(hoveringPin);
+    }
+
+    private void placeHoveringPin(){
+        LatLng pos = mapboxMap.getCameraPosition().target;
+        MapPin pin = new MapPin();
+        pin.setLatitude(pos.getLatitude());
+        pin.setLongitude(pos.getLongitude());
+        pin.setIsPublic(false);
+        mapViewModel.createMapPin(pin);
+        // move camera to the pin, begin editing
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(pos)
+                .zoom(15)
+                .build();
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        mapViewModel.setPinToView(pin);
+        ViewPinBottomSheetDialogFragment frag = new ViewPinBottomSheetDialogFragment();
+        frag.setEditMode(true);
+        frag.show(getActivity().getSupportFragmentManager(), "ViewPin");
+
     }
 
     //
