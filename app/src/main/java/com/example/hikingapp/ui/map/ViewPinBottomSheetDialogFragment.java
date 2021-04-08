@@ -87,6 +87,8 @@ public class ViewPinBottomSheetDialogFragment extends BottomSheetDialogFragment 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(pin.getCreatedByUid().equals(user.getUid())){
             editButton.setVisibility(View.VISIBLE);
+        }else{
+            editButton.setVisibility(View.GONE);
         }
 
         editButton.setOnClickListener(new View.OnClickListener(){
@@ -146,8 +148,8 @@ public class ViewPinBottomSheetDialogFragment extends BottomSheetDialogFragment 
             isPublic_cb.setVisibility(View.VISIBLE);
 
             isPublic_cb.setChecked(pin.getIsPublic());
-            name_et.setText(name_et.getText());
-            desc_et.setText(desc_et.getText());
+            name_et.setText(name_tv.getText());
+            desc_et.setText(desc_tv.getText());
         }else{
             editButton.setVisibility(View.VISIBLE);
             saveButton.setVisibility(View.GONE);

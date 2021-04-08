@@ -91,10 +91,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnSymbo
     private LocationEngine locationEngine;
     private MapboxMap mapboxMap;
     private SymbolManager symbolManager;
-    private SymbolManager pinSymbolManager;
+    private SymbolManager userPinSymbolManager;
+    private SymbolManager otherPinSymbolManager;
     private Map<Symbol, HikingPlan> startMarkers = new HashMap<>();
     private Map<Symbol, HikingPlan> endMarkers = new HashMap<>();
-    private Map<Symbol, MapPin> pins = new HashMap<>();
+    private Map<Symbol, MapPin> userPins = new HashMap<>();
+    private Map<Symbol, MapPin> otherPins = new HashMap<>();
 
     private Button addPinButton;
     private Button confirmPinButton;
@@ -339,70 +341,93 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnSymbo
         });
     }
 
-    private void setUpPins(Style style, List<MapPin> pins, boolean areUserPins){
+    private void setUpUserPins(Style style, List<MapPin> pins){
         Log.i(TAG, "setUpPins for " + pins.size() + " pins");
 
-        if(pinSymbolManager != null){
-            pinSymbolManager.deleteAll();
+        if(userPinSymbolManager != null){
+            userPinSymbolManager.deleteAll();
         }
-        pinSymbolManager = new SymbolManager(mapView, mapboxMap, style);
-        pinSymbolManager.setIconAllowOverlap(true);
+        userPinSymbolManager = new SymbolManager(mapView, mapboxMap, style);
+        userPinSymbolManager.setIconAllowOverlap(true);
 
         String icon = ID_ICON_GRAY;
         float size = 0.75f;
-        if(areUserPins){
-            icon = ID_ICON_BLUE;
-            size = 1f;
-        }
 
         for(MapPin pin : pins){
-            Symbol symbol = pinSymbolManager.create(new SymbolOptions()
+            Symbol symbol = userPinSymbolManager.create(new SymbolOptions()
                     .withLatLng(new LatLng(pin.getLatitude(), pin.getLongitude()))
-                    .withIconImage(icon)
-                    .withIconSize(size)
+                    .withIconImage(ID_ICON_BLUE)
+                    .withIconSize(1f)
                     .withIconOpacity(0.75f));
-            this.pins.put(symbol, pin);
+            this.userPins.put(symbol, pin);
         }
 
-        pinSymbolManager.addClickListener(this);
+        userPinSymbolManager.addClickListener(this);
+    }
+
+    private void setUpOtherPins(Style style, List<MapPin> pins){
+        Log.i(TAG, "setUpPins for " + pins.size() + " pins");
+
+        if(otherPinSymbolManager != null){
+            otherPinSymbolManager.deleteAll();
+        }
+        otherPinSymbolManager = new SymbolManager(mapView, mapboxMap, style);
+        otherPinSymbolManager.setIconAllowOverlap(true);
+
+        for(MapPin pin : pins){
+            Symbol symbol = otherPinSymbolManager.create(new SymbolOptions()
+                    .withLatLng(new LatLng(pin.getLatitude(), pin.getLongitude()))
+                    .withIconImage(ID_ICON_GRAY)
+                    .withIconSize(0.75f)
+                    .withIconOpacity(0.75f));
+            this.otherPins.put(symbol, pin);
+        }
+
+        otherPinSymbolManager.addClickListener(this);
     }
 
     @Override
     public boolean onAnnotationClick(Symbol symbol){
-        if(pins.containsKey(symbol)){
-            MapPin pin = pins.get(symbol);
-            Log.i(TAG, "Clicked pin " + pin.getUid());
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(symbol.getLatLng())
-                    .zoom(15)
-                    .build();
-            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            mapViewModel.setPinToView(pin);
-            ViewPinBottomSheetDialogFragment frag = new ViewPinBottomSheetDialogFragment();
-            frag.show(getActivity().getSupportFragmentManager(), "ViewPin");
+        MapPin pin;
+        if (userPins.containsKey(symbol)) {
+            pin = userPins.get(symbol);
+        }else if(otherPins.containsKey(symbol)){
+            pin = otherPins.get(symbol);
+        }else{
+            return true;
         }
+        Log.i(TAG, "Clicked pin " + pin.getUid());
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(symbol.getLatLng())
+                .zoom(15)
+                .build();
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        mapViewModel.setPinToView(pin);
+        ViewPinBottomSheetDialogFragment frag = new ViewPinBottomSheetDialogFragment();
+        frag.show(getActivity().getSupportFragmentManager(), "ViewPin");
         return false;
     }
 
     private void setUpPins(Style style){
         List<MapPin> publicPins = mapViewModel.getPublicPins().getValue();
         if(publicPins != null){
-            setUpPins(style, publicPins, false);
+            setUpOtherPins(style, publicPins);
         }
         mapViewModel.getPublicPins().observe(getViewLifecycleOwner(), new Observer<List<MapPin>>() {
             @Override
             public void onChanged(List<MapPin> pins) {
-//                setUpPins(style, pins, true);
+                Log.i(TAG, "got " + pins.size() + " pins");
+                setUpOtherPins(style, pins);
             }
         });
         List<MapPin> userPins = mapViewModel.getUserPins().getValue();
         if(userPins != null){
-            setUpPins(style, userPins, true);
+            setUpUserPins(style, userPins);
         }
         mapViewModel.getUserPins().observe(getViewLifecycleOwner(), new Observer<List<MapPin>>() {
             @Override
             public void onChanged(List<MapPin> pins) {
-                setUpPins(style, pins, true);
+                setUpUserPins(style, pins);
             }
         });
     }
