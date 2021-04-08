@@ -1,9 +1,12 @@
 package com.example.hikingapp.ui.settings;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.hikingapp.data.LoginDataSource;
 import com.example.hikingapp.model.EmergencyContact;
 import com.example.hikingapp.model.HikingPlan;
 import com.example.hikingapp.model.User;
@@ -25,6 +28,8 @@ public class SettingsViewModel extends ViewModel implements UserListener {
     private MutableLiveData<List<EmergencyContact>> mEmergengyContact;
     private MutableLiveData<EmergencyContact> contactToEdit;
 
+    private LoginDataSource loginDataSource;
+
     public SettingsViewModel() {
         userRepository = UserRepository.getInstance(UserDataSource.getInstance());
         mEmergengyContact = new MutableLiveData<List<EmergencyContact>>();
@@ -43,6 +48,8 @@ public class SettingsViewModel extends ViewModel implements UserListener {
         emergencyContactMessageText.setValue("");
         userRepository.registerListener(this);
         userRepository.userData();
+
+        loginDataSource = LoginDataSource.getInstance();
     }
 
     public void setContactToEdit(EmergencyContact contact) { contactToEdit.setValue(contact); }
@@ -73,4 +80,9 @@ public class SettingsViewModel extends ViewModel implements UserListener {
     public void createEmergencyContact(EmergencyContact contact) { userRepository.createEmergencyContact(contact); }
     public void updateEmergencyContact(EmergencyContact contact) { userRepository.updateEmergencyContact(contact); }
     public void deleteEmergencyContact(EmergencyContact contact) { userRepository.deleteEmergencyContact(contact); }
+
+    public void updateUsername(LoginDataSource.LoginDataSourceListener listener, String name){ loginDataSource.updateUsername(listener, name); }
+    public void logout(){ loginDataSource.logout(); }
+    public void deleteAccount(LoginDataSource.LoginDataSourceListener listener){ loginDataSource.delete(listener); }
+
 }

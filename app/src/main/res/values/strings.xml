@@ -31,6 +31,9 @@
     <string name="action_activate_plan">Activate plan</string>
     <string name="action_deactivate_plan">Deactivate plan</string>
     <string name="action_edit">Edit</string>
+    <string name="action_edit_username">Edit username</string>
+    <string name="action_delete_account">Delete account</string>
+    <string name="are_you_sure">Are you sure?</string>
     <string name="action_view">View</string>
     <string name="action_delete">Delete</string>
     <string name="action_cancel">Cancel</string>
@@ -55,6 +58,7 @@
     <string name="contact_name">Contact Name</string>
     <string name="contact_phone_numer">Phone Number</string>
     <string name="contact_message">Message</string>
+    <string name="account_management">Account Management</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- MAPBOX PUBLIC TOKEN -->

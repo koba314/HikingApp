@@ -27,7 +27,8 @@ public class LoginDataSource {
     private FirebaseAuth auth;
 
     public interface LoginDataSourceListener{
-
+        void onDelete(boolean success);
+        void onUpdateUsername(boolean success);
     }
 
     // private constructor
@@ -99,6 +100,30 @@ public class LoginDataSource {
 
     public void logout() {
         auth.signOut();
+    }
+
+    public void updateUsername(LoginDataSourceListener listener, String name){
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build();
+        if(auth.getCurrentUser() != null){
+            auth.getCurrentUser().updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>(){
+                @Override
+                public void onComplete(@NonNull Task<Void> task){
+                    Log.i(TAG, "updated username");
+                    listener.onUpdateUsername(task.isSuccessful());
+                }
+            });
+        }
+    }
+
+    public void delete(LoginDataSourceListener listener){
+        auth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                listener.onDelete(task.isSuccessful());
+            }
+        });
     }
 
     public void registerListener(LoginListener listener){

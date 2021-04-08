@@ -25,6 +25,9 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private Button loginRegisterButton;
     private Button logoutButton;
+    private Button mapButton;
+    private Button plansButton;
+    private Button settingsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,9 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         loginRegisterButton = findViewById(R.id.login_register_button);
         logoutButton = findViewById(R.id.logout_button);
+        mapButton = findViewById(R.id.map_button);
+        plansButton = findViewById(R.id.plans_button);
+        settingsButton = findViewById(R.id.settings_button);
     }
 
     /*
@@ -82,6 +88,9 @@ public class SplashScreenActivity extends AppCompatActivity {
         if(!LoginRepository.getInstance(LoginDataSource.getInstance()).isLoggedIn()){
             loginRegisterButton.setVisibility(View.VISIBLE);
             logoutButton.setVisibility(View.GONE);
+            mapButton.setVisibility(View.GONE);
+            plansButton.setVisibility(View.GONE);
+            settingsButton.setVisibility(View.GONE);
         }
     }
 
@@ -111,6 +120,15 @@ public class SplashScreenActivity extends AppCompatActivity {
         if(auth.getCurrentUser() != null){
             loginRegisterButton.setVisibility(View.GONE);
             logoutButton.setVisibility(View.VISIBLE);
+            mapButton.setVisibility(View.VISIBLE);
+            plansButton.setVisibility(View.VISIBLE);
+            settingsButton.setVisibility(View.VISIBLE);
+        }else{
+            loginRegisterButton.setVisibility(View.VISIBLE);
+            logoutButton.setVisibility(View.GONE);
+            mapButton.setVisibility(View.GONE);
+            plansButton.setVisibility(View.GONE);
+            settingsButton.setVisibility(View.GONE);
         }
     }
 
