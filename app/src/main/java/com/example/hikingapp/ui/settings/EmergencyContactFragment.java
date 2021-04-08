@@ -121,7 +121,7 @@ public class EmergencyContactFragment extends Fragment {
         public void bind(EmergencyContact contact){
             this.contact = contact;
             this.name = contact.getName();
-            this.phoneNumber = Integer.toString(contact.getPhoneNumber());
+            this.phoneNumber = contact.getPhoneNumber();
             nameView.setText(this.name);
             phoneNumberView.setText(phoneNumber);
         }

@@ -49,7 +49,7 @@ public class EditContactBottomSheetDialogFragment extends BottomSheetDialogFragm
         contactMessageET = root.findViewById(R.id.contact_message_et);
 
         contactNameET.setText(contact.getName());
-        contactPhoneNumberET.setText(Integer.toString(contact.getPhoneNumber()));
+        contactPhoneNumberET.setText(contact.getPhoneNumber());
         contactMessageET.setText(contact.getMessage());
 
         Button save_button = root.findViewById(R.id.contact_save_button);
@@ -61,7 +61,7 @@ public class EditContactBottomSheetDialogFragment extends BottomSheetDialogFragm
             public void onClick(View v){
                 Log.i(TAG, "clicked SAVE contact");
                 contact.setName(contactNameET.getText().toString());
-                contact.setPhoneNumber(Integer.parseInt(contactPhoneNumberET.getText().toString()));
+                contact.setPhoneNumber(contactPhoneNumberET.getText().toString());
                 contact.setMessage(contactMessageET.getText().toString());
                 settingsViewModel.updateEmergencyContact(contact);
                 dismiss();
