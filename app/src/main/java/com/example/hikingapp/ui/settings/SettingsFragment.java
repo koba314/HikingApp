@@ -1,5 +1,6 @@
 package com.example.hikingapp.ui.settings;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +27,8 @@ import com.example.hikingapp.data.LoginDataSource;
 import com.example.hikingapp.model.EmergencyContact;
 import com.example.hikingapp.model.HikingPlan;
 import com.example.hikingapp.ui.plans.CreatePlansBottomSheetDialogFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SettingsFragment extends Fragment implements LoginDataSource.LoginDataSourceListener {
 
@@ -33,6 +37,8 @@ public class SettingsFragment extends Fragment implements LoginDataSource.LoginD
 
     private SettingsViewModel settingsViewModel;
     private EmergencyContactFragment emergencyContactFragment;
+
+    private TextView username_et;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
@@ -43,6 +49,7 @@ public class SettingsFragment extends Fragment implements LoginDataSource.LoginD
         final TextView emergencyContactTitle = root.findViewById(R.id.text_emergency_contact_title);
         final TextView emergencyContactName = root.findViewById(R.id.text_emergency_contact_name);
         final TextView emergencyContactPhoneNumber = root.findViewById(R.id.text_emergency_contact_phone_number);
+        username_et = root.findViewById(R.id.account_username_et);
         final Button emergencyContactButton = root.findViewById(R.id.button_emergency_contact_view);
         final Button editUsernameButton = root.findViewById(R.id.edit_username_button);
         final Button logoutButton = root.findViewById(R.id.logout_button);
@@ -80,10 +87,24 @@ public class SettingsFragment extends Fragment implements LoginDataSource.LoginD
             }
         });
         emergencyContactFragment = new EmergencyContactFragment();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null){
+            username_et.setText(user.getDisplayName());
+        }
         editUsernameButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                
+                String name = username_et.getText().toString();
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user != null && !name.equals(user.getDisplayName())){
+                    settingsViewModel.updateUsername(SettingsFragment.this, name);
+                    // hide keyboard
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(root.getWindowToken(), 0);
+                }else{
+                    Toast.makeText(getContext(), "Username is the same!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         deleteAccountButton.setOnClickListener(new View.OnClickListener(){
@@ -139,7 +160,16 @@ public class SettingsFragment extends Fragment implements LoginDataSource.LoginD
 
     @Override
     public void onUpdateUsername(boolean success){
+        if(success){
+            Toast.makeText(getContext(), "Username updated!", Toast.LENGTH_SHORT).show();
 
+        }else{
+            Toast.makeText(getContext(), "Username could not be updated!", Toast.LENGTH_SHORT).show();
+        }
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null){
+            username_et.setText(user.getDisplayName());
+        }
     }
 
     //

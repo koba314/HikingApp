@@ -162,6 +162,7 @@
                     android:layout_height="wrap_content"
                     >
                     <TextView
+                        android:visibility="gone"
                         android:id="@+id/account_username_tv"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -171,7 +172,6 @@
                         ></TextView>
 
                     <EditText
-                        android:visibility="gone"
                         android:id="@+id/account_username_et"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
