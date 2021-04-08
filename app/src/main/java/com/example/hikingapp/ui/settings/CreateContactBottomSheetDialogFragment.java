@@ -73,7 +73,7 @@ public class CreateContactBottomSheetDialogFragment extends BottomSheetDialogFra
             public void onClick(View v){
                 Log.i(TAG, "clicked SAVE contact");
                 contact.setName(contactNameET.getText().toString());
-                contact.setPhoneNumber(Integer.parseInt(contactPhoneNumberET.getText().toString()));
+                contact.setPhoneNumber(contactPhoneNumberET.getText().toString());
                 contact.setMessage(contactMessageET.getText().toString());
                 settingsViewModel.createEmergencyContact(contact);
                 dismiss();

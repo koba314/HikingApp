@@ -50,7 +50,7 @@ public class ViewContactBottomSheetDialogFragment extends BottomSheetDialogFragm
         contactMessageText = root.findViewById(R.id.contact_message_text);
 
         contactNameText.setText(contact.getName());
-        contactPhoneNumberText.setText(Integer.toString(contact.getPhoneNumber()));
+        contactPhoneNumberText.setText(contact.getPhoneNumber());
         contactMessageText.setText(contact.getMessage());
 
         return root;
