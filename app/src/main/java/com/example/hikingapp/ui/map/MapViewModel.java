@@ -98,13 +98,18 @@ public class MapViewModel extends ViewModel implements HikingPlanDataSource.Hiki
     public void onGetHikingPlans(List<HikingPlan> plans){
         List<HikingPlan> visiblePlans = new ArrayList<>();
         // get the active plan and visible plans
+        boolean noActivePlan = true;
         for(HikingPlan plan : plans){
             if(plan.getActive()){
                 mActiveHikingPlan.setValue(plan);
+                noActivePlan = false;
             }
             if(plan.getVisible()){
                 visiblePlans.add(plan);
             }
+        }
+        if(noActivePlan){
+            mActiveHikingPlan.setValue(null);
         }
         mVisibleHikingPlans.setValue(visiblePlans);
     }
